@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Attack
+  - Target
+  - Origin
+  - Bait
   layers:
   - Default
   - TransparentFX
