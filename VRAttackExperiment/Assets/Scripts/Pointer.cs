@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using TMPro;
 public class Pointer : MonoBehaviour
 {
     public float m_defaultLength = 50.0f;
@@ -30,6 +31,11 @@ public class Pointer : MonoBehaviour
 
     private Vector3 lastDisplayedCursorPos;
     private Vector3 lastRealCursorPos;
+
+
+    private float timer;
+    private bool timerStop = false;
+    public GameObject timerUI;
     // Start is called before the first frame update
     void Start()
     {
@@ -42,7 +48,7 @@ public class Pointer : MonoBehaviour
     {
         
         UpdateLine();
-
+        timerUI.GetComponent<TextMeshProUGUI>().text = timer+"\nsec";
     }
     private void UpdateLine()
     {
@@ -57,6 +63,10 @@ public class Pointer : MonoBehaviour
             targetOffset = (  bait.transform.position - attackTarget.transform.position);
             distract.distract();
             Debug.Log("Reached origin");
+
+            //time an attack
+            timerStop = false;
+            StartCoroutine("timerStart");
         }
         //if 1) the cursor has reached the targetlocation 2) the cursor is even further from the target than the starting origin (meaning it is not moving towards the target), then do not attempt to attack
         else if (attackAttempt & (isClose(endPosition, attackTarget.transform.position) || (attackTarget.transform.position-origin.transform.position).magnitude < (attackTarget.transform.position - endPosition).magnitude-1.0f))
@@ -64,6 +74,7 @@ public class Pointer : MonoBehaviour
 
             Debug.Log("Cancel attempt");
             attackAttempt = false;
+            timerStop = true;
         }
 
         if (hit.collider != null)
@@ -108,6 +119,20 @@ public class Pointer : MonoBehaviour
         float dist = (point1 - point2).magnitude;
         return dist < 0.3f;
     }
+
+    private IEnumerator timerStart()
+    {
+        timer = 0f;
+        while (!timerStop)
+        {
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        Debug.Log("Previous time taken: " + timer);
+    }
+
+    
+    
 
     public void displayHideRealCursor()
     {
