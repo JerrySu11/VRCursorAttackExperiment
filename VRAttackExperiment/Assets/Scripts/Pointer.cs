@@ -11,7 +11,7 @@ public class Pointer : MonoBehaviour
     public DistractionManager distract;
 
     private LineRenderer m_LineRenderer = null;
-    private bool inZone = false;
+    public bool inZone = false;
     private bool attackAttempt = false;
 
     private bool displayRealCursor = false;
@@ -36,6 +36,8 @@ public class Pointer : MonoBehaviour
     private float timer;
     private bool timerStop = false;
     public GameObject timerUI;
+
+    public ButtonManager buttonManager;
     // Start is called before the first frame update
     void Start()
     {
@@ -56,26 +58,10 @@ public class Pointer : MonoBehaviour
         float targetlength = data.pointerCurrentRaycast.distance == 0?m_defaultLength: data.pointerCurrentRaycast.distance;
         RaycastHit hit = CreateRayCast(targetlength);
         Vector3 endPosition = transform.position + (transform.forward * targetlength);
-        //Debug.Log(endPosition);
-        if (isClose(endPosition, origin.transform.position) && !attackAttempt)
-        {
-            attackAttempt = true;
-            targetOffset = (  bait.transform.position - attackTarget.transform.position);
-            distract.distract();
-            Debug.Log("Reached origin");
-
-            //time an attack
-            timerStop = false;
-            StartCoroutine("timerStart");
-        }
-        //if 1) the cursor has reached the targetlocation 2) the cursor is even further from the target than the starting origin (meaning it is not moving towards the target), then do not attempt to attack
-        else if (attackAttempt & (isClose(endPosition, attackTarget.transform.position) || (attackTarget.transform.position-origin.transform.position).magnitude < (attackTarget.transform.position - endPosition).magnitude-1.0f))
-        {
-
-            Debug.Log("Cancel attempt");
-            attackAttempt = false;
-            timerStop = true;
-        }
+        //Debug.Log("Pointer" + endPosition);
+        //Debug.Log("Origin"+origin.transform.position);
+        
+        
 
         if (hit.collider != null)
         {
@@ -113,18 +99,48 @@ public class Pointer : MonoBehaviour
         {
             RealLineRenderer.enabled = false;
         }
+        if (inZone)
+        {
+            Debug.Log("cursor pos" + lastDisplayedCursorPos);
+            Debug.Log("origin pos" + origin.transform.position);
+            if (isClose(lastDisplayedCursorPos, origin.transform.position) && !attackAttempt)
+            {
+                attackAttempt = true;
+                targetOffset = (bait.transform.position - attackTarget.transform.position);
+                distract.distract();
+                Debug.Log("Reached origin");
+                thresholdDistRatio = (attackTarget.transform.position - bait.transform.position).magnitude / (bait.transform.position - origin.transform.position).magnitude;
+                //time an attack
+                timerStop = false;
+                StartCoroutine("timerStart");
+            }
+            //if 1) the cursor has reached the targetlocation 2) the cursor is even further from the target than the starting origin (meaning it is not moving towards the target), then do not attempt to attack
+            else if (attackAttempt & (isClose(lastDisplayedCursorPos, bait.transform.position) || (bait.transform.position - origin.transform.position).magnitude < (bait.transform.position - lastDisplayedCursorPos).magnitude - 1.0f))
+            {
+
+                Debug.Log("Cancel attempt");
+                attackAttempt = false;
+                timerStop = true;
+                StartCoroutine("endSceneDelay");
+            }
+        }
     }
     private bool isClose(Vector3 point1, Vector3 point2)
     {
         float dist = (point1 - point2).magnitude;
-        return dist < 0.3f;
+        return dist < 0.1f;
     }
-
+    private IEnumerator endSceneDelay()
+    {
+        yield return new WaitForSeconds(1.5f);
+        buttonManager.endScene();
+    }
     private IEnumerator timerStart()
     {
         timer = 0f;
         while (!timerStop)
         {
+            buttonManager.addTimeLocationData(timer, lastRealCursorPos);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
@@ -236,3 +252,4 @@ public class Pointer : MonoBehaviour
     }
 
 }
+
