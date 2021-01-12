@@ -112,28 +112,28 @@ public class ExperimentDataManager : MonoBehaviour
             sceneData += entry.Key + "," + entry.Value.isNormal + "," + entry.Value.angle + "," + entry.Value.targetLocation.x + "," + entry.Value.targetLocation.y + "," + entry.Value.targetLocation.z + "," + entry.Value.attackLocation.x + "," + entry.Value.attackLocation.y + "," + entry.Value.attackLocation.z + "\n";
             foreach(KeyValuePair<float, Vector3> entry2 in entry.Value.timeLocationData)
             {
-                timeLocationData += entry.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
+                timeLocationData += entry.Key + "," + entry2.Key + ","+entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
 
             }
             foreach (KeyValuePair<float, Vector3> entry2 in entry.Value.timeHeadsetLocationData)
             {
-                timeHeadsetLocationData += entry.Key  + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
+                timeHeadsetLocationData += entry.Key + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
 
             }
             foreach (KeyValuePair<float, Quaternion> entry2 in entry.Value.timeHeadsetRotationData)
             {
-                timeHeadsetRotationData += entry.Key  + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + ","+ entry2.Value.w + "\n";
+                timeHeadsetRotationData += entry.Key + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + ","+ entry2.Value.w + "\n";
 
             }
         }
         string folder = Application.dataPath;
 
-
+        Directory.CreateDirectory(folder + "data/");
         
-        string filePath1 = folder+ "SceneData.csv";
-        string filePath2 = folder + "TimeLocationData.csv";
-        string filePath3 = folder + "TimeHeadsetLocationData.csv";
-        string filePath4 = folder + "TimeHeadsetRotationData.csv";
+        string filePath1 = folder+ "data/"+"SceneData.csv";
+        string filePath2 = folder + "data/" + "TimeLocationData.csv";
+        string filePath3 = folder + "data/" + "TimeHeadsetLocationData.csv";
+        string filePath4 = folder + "data/" + "TimeHeadsetRotationData.csv";
         using (var writer = new StreamWriter(filePath1, false))
         {
             writer.Write(sceneData);
