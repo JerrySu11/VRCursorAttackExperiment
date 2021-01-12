@@ -26,24 +26,42 @@ public class ButtonManager : MonoBehaviour
     public GameObject origin;
     public GameObject normal;
     public GameObject weird;
+    public GameObject breakDescription;
+    public GameObject breakContinue;
 
     public Pointer pointer;
     
-    private float[] allAngles = { 10f, 12f, 14f, 16f, 18f, 20f, 22f };
+    private float[] allAngles = {10f ,0f,-10f,5f,-5f,15f,-15f,20f,-20f,25f,-25f};
+    private float[] allExperimentAngles;
     private int currentSceneNumber = 0;
     private Dictionary<float, Vector3> tempTimeLocationData = new Dictionary<float, Vector3>();
-    
+    private Dictionary<float, Vector3> tempTimeHeadsetLocationData = new Dictionary<float, Vector3>();
+    private Dictionary<float, Quaternion> tempTimeHeadsetRotationData = new Dictionary<float, Quaternion>();
+
+    //Break management
+    bool hasBreak = false;
+
     // Start is called before the first frame update
     void Start()
     {
-        //Randomize the order of the experiment angles
+        allExperimentAngles = new float[allAngles.Length*10];
         for (int i = 0; i < allAngles.Length; i++)
         {
-            int rnd = Random.Range(0, allAngles.Length);
-            float temp = allAngles[rnd];
-            allAngles[rnd] = allAngles[i];
-            allAngles[i] = temp;
+            for (int j = 0; j < 10; j++)
+            {
+                allExperimentAngles[i * 10 + j] = allAngles[i];
+            }
+
         }
+        //Randomize the order of the experiment angles
+        for (int i = 0; i < allExperimentAngles.Length; i++)
+        {
+            int rnd = Random.Range(0, allExperimentAngles.Length);
+            float temp = allExperimentAngles[rnd];
+            allExperimentAngles[rnd] = allExperimentAngles[i];
+            allExperimentAngles[i] = temp;
+        }
+        
         /*
         targetButtons = new List<GameObject>();
         baitButtons = new List<GameObject>();
@@ -75,19 +93,22 @@ public class ButtonManager : MonoBehaviour
         
         introduction.SetActive(false);
         startButton.SetActive(false);
-        setUpScene(allAngles[currentSceneNumber]);
+        setUpScene(allExperimentAngles[currentSceneNumber]);
        
     }
 
     public void setUpScene(float angle)
     {
         tempTimeLocationData.Clear();
+        tempTimeHeadsetLocationData.Clear();
+        tempTimeHeadsetRotationData.Clear();
         bait.SetActive(true);
         attack.SetActive(true);
         origin.SetActive(true);
         pointer.inZone = true;
 
         randomizeAngle(bait);
+        /*
         int randomDirection = Random.Range(0,1);
         //0: rotate attack around origin clockwise, with 'angle' amount from bait
         if (randomDirection == 0)
@@ -103,6 +124,13 @@ public class ButtonManager : MonoBehaviour
             vec = Rotate(vec, angle);
             setButton(attack, origin.GetComponent<RectTransform>().anchoredPosition + vec, attack.GetComponent<RectTransform>().sizeDelta);
         }
+        */
+        Vector2 vec = bait.GetComponent<RectTransform>().anchoredPosition - origin.GetComponent<RectTransform>().anchoredPosition;
+        vec = Rotate(vec, angle);
+        setButton(attack, origin.GetComponent<RectTransform>().anchoredPosition + vec, attack.GetComponent<RectTransform>().sizeDelta);
+
+        ExperimentDataManager.setButtonLocation(currentSceneNumber, attack.transform.position, bait.transform.position);
+        ExperimentDataManager.setAngle(currentSceneNumber, angle);
     }
     public static Vector2 Rotate(Vector2 v, float degrees)
     {
@@ -118,6 +146,8 @@ public class ButtonManager : MonoBehaviour
     public void endScene()
     {
         ExperimentDataManager.setTimeLocationData(currentSceneNumber, tempTimeLocationData);
+        ExperimentDataManager.setTimeHeadsetLocationData(currentSceneNumber, tempTimeHeadsetLocationData);
+        ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
         bait.SetActive(false);
         attack.SetActive(false);
         origin.SetActive(false);
@@ -132,15 +162,36 @@ public class ButtonManager : MonoBehaviour
 
         normal.SetActive(false);
         weird.SetActive(false);
-        if (currentSceneNumber < allAngles.Length)
+        if (currentSceneNumber < allExperimentAngles.Length)
         {
-            setUpScene(allAngles[currentSceneNumber]);
+            if (currentSceneNumber == 55)
+            {
+                breakTime();
+            }
+            else
+            {
+                setUpScene(allExperimentAngles[currentSceneNumber]);
+            }
+            
+
         }
         else
         {
             end.SetActive(true);
+            ExperimentDataManager.exportData();
         }
         
+    }
+    private void breakTime()
+    {
+        breakDescription.SetActive(true);
+        breakContinue.SetActive(true);
+    }
+    public void endBreak()
+    {
+        breakDescription.SetActive(false);
+        breakContinue.SetActive(false);
+        setUpScene(allExperimentAngles[currentSceneNumber]);
     }
     public void addTimeLocationData(float time, Vector3 location)
     {
@@ -151,6 +202,30 @@ public class ButtonManager : MonoBehaviour
         else
         {
             tempTimeLocationData.Add(time, location);
+        }
+    }
+
+    public void addTimeHeadsetLocationData(float time, Vector3 location)
+    {
+        if (tempTimeHeadsetLocationData.ContainsKey(time))
+        {
+            tempTimeHeadsetLocationData[time] = location;
+        }
+        else
+        {
+            tempTimeHeadsetLocationData.Add(time, location);
+        }
+    }
+
+    public void addTimeHeadsetRotationData(float time, Quaternion rotation)
+    {
+        if (tempTimeHeadsetRotationData.ContainsKey(time))
+        {
+            tempTimeHeadsetRotationData[time] = rotation;
+        }
+        else
+        {
+            tempTimeHeadsetRotationData.Add(time, rotation);
         }
     }
 

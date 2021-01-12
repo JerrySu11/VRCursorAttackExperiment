@@ -38,6 +38,8 @@ public class Pointer : MonoBehaviour
     public GameObject timerUI;
 
     public ButtonManager buttonManager;
+
+    public Transform headsetTransform;
     // Start is called before the first frame update
     void Start()
     {
@@ -101,8 +103,8 @@ public class Pointer : MonoBehaviour
         }
         if (inZone)
         {
-            Debug.Log("cursor pos" + lastDisplayedCursorPos);
-            Debug.Log("origin pos" + origin.transform.position);
+            //Debug.Log("cursor pos" + lastDisplayedCursorPos);
+            //Debug.Log("origin pos" + origin.transform.position);
             if (isClose(lastDisplayedCursorPos, origin.transform.position) && !attackAttempt)
             {
                 attackAttempt = true;
@@ -141,6 +143,9 @@ public class Pointer : MonoBehaviour
         while (!timerStop)
         {
             buttonManager.addTimeLocationData(timer, lastRealCursorPos);
+            //Debug.Log("Headset: "+headsetTransform.rotation);
+            buttonManager.addTimeHeadsetLocationData(timer, headsetTransform.position);
+            buttonManager.addTimeHeadsetRotationData(timer, headsetTransform.rotation);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }
