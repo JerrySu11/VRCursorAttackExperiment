@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
 public class ButtonManager : MonoBehaviour
@@ -20,6 +21,7 @@ public class ButtonManager : MonoBehaviour
 
     public GameObject introduction;
     public GameObject end;
+    public GameObject endButton;
     public GameObject startButton;
     public GameObject bait;
     public GameObject attack;
@@ -32,24 +34,24 @@ public class ButtonManager : MonoBehaviour
     public Pointer pointer;
     
     private float[] allAngles = {10f ,0f,-10f,5f,-5f,15f,-15f,20f,-20f,25f,-25f};
+    //private float[] allAngles = {0f};
     private float[] allExperimentAngles;
     private int currentSceneNumber = 0;
     private Dictionary<float, Vector3> tempTimeLocationData = new Dictionary<float, Vector3>();
     private Dictionary<float, Vector3> tempTimeHeadsetLocationData = new Dictionary<float, Vector3>();
     private Dictionary<float, Quaternion> tempTimeHeadsetRotationData = new Dictionary<float, Quaternion>();
-
-    //Break management
-    bool hasBreak = false;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        allExperimentAngles = new float[allAngles.Length*10];
+        int repetition = 10;
+        allExperimentAngles = new float[allAngles.Length* repetition];
         for (int i = 0; i < allAngles.Length; i++)
         {
-            for (int j = 0; j < 10; j++)
+            for (int j = 0; j < repetition; j++)
             {
-                allExperimentAngles[i * 10 + j] = allAngles[i];
+                allExperimentAngles[i * repetition + j] = allAngles[i];
             }
 
         }
@@ -97,6 +99,7 @@ public class ButtonManager : MonoBehaviour
        
     }
 
+    
     public void setUpScene(float angle)
     {
         tempTimeLocationData.Clear();
@@ -155,6 +158,10 @@ public class ButtonManager : MonoBehaviour
         normal.SetActive(true);
         weird.SetActive(true);
     }
+    public void endGame()
+    {
+        Application.Quit();
+    }
     public void goToNextScene(bool isNormal)
     {
         ExperimentDataManager.setNormal(currentSceneNumber, isNormal);
@@ -177,8 +184,10 @@ public class ButtonManager : MonoBehaviour
         }
         else
         {
-            end.SetActive(true);
             ExperimentDataManager.exportData();
+            end.SetActive(true);
+            endButton.SetActive(true);
+            
         }
         
     }

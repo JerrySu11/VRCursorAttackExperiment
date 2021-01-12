@@ -8,6 +8,7 @@ using UnityEditor;
 
 public class ExperimentDataManager : MonoBehaviour
 {
+    
     //key: scene number. value: an ExperimentData object that contains data for that scene
     private static Dictionary<int, ExperimentData> experimentData = new Dictionary<int, ExperimentData>();
     
@@ -125,17 +126,14 @@ public class ExperimentDataManager : MonoBehaviour
 
             }
         }
-#if UNITY_EDITOR
-        string folder = Application.streamingAssetsPath;
+        string folder = Application.dataPath;
 
 
-#else
-        string folder = Application.persistentDataPath;
-#endif
-        string filePath1 = folder+ "sceneData.csv";
-        string filePath2 = folder + "timeLocationData.csv";
-        string filePath3 = folder + "timeHeadsetLocationData.csv";
-        string filePath4 = folder + "timeHeadsetRotationData.csv";
+        
+        string filePath1 = folder+ "SceneData.csv";
+        string filePath2 = folder + "TimeLocationData.csv";
+        string filePath3 = folder + "TimeHeadsetLocationData.csv";
+        string filePath4 = folder + "TimeHeadsetRotationData.csv";
         using (var writer = new StreamWriter(filePath1, false))
         {
             writer.Write(sceneData);
