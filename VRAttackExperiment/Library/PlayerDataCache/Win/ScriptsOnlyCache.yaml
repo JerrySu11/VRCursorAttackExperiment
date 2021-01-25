@@ -36,6 +36,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.CanvasScaler
     - UnityEngine.UI.GraphicRaycaster
     - UnityEngine.UI.Image
+    - UnityEngine.UI.RawImage
   sceneClasses:
     Assets/Scenes/Experiment Scene.unity:
     - Class: 1
@@ -79,53 +80,55 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 11210}
     - Class: 114
-      Script: {instanceID: 11228}
+      Script: {instanceID: 11230}
     - Class: 114
-      Script: {instanceID: 11240}
+      Script: {instanceID: 11242}
     - Class: 114
-      Script: {instanceID: 11486}
+      Script: {instanceID: 11488}
     - Class: 114
-      Script: {instanceID: 11550}
+      Script: {instanceID: 11552}
     - Class: 114
-      Script: {instanceID: 11948}
+      Script: {instanceID: 11950}
     - Class: 114
-      Script: {instanceID: 11986}
+      Script: {instanceID: 11988}
     - Class: 114
-      Script: {instanceID: 12188}
+      Script: {instanceID: 12190}
     - Class: 114
-      Script: {instanceID: 12394}
+      Script: {instanceID: 12396}
     - Class: 114
-      Script: {instanceID: 12510}
+      Script: {instanceID: 12512}
     - Class: 114
-      Script: {instanceID: 12622}
+      Script: {instanceID: 12540}
     - Class: 114
-      Script: {instanceID: 12768}
+      Script: {instanceID: 12624}
     - Class: 114
-      Script: {instanceID: 12782}
+      Script: {instanceID: 12770}
     - Class: 114
-      Script: {instanceID: 12852}
+      Script: {instanceID: 12784}
     - Class: 114
-      Script: {instanceID: 12856}
+      Script: {instanceID: 12854}
     - Class: 114
-      Script: {instanceID: 12874}
+      Script: {instanceID: 12858}
     - Class: 114
-      Script: {instanceID: 13006}
+      Script: {instanceID: 12876}
     - Class: 114
-      Script: {instanceID: 13024}
+      Script: {instanceID: 13008}
     - Class: 114
-      Script: {instanceID: 13198}
+      Script: {instanceID: 13026}
     - Class: 114
-      Script: {instanceID: 13208}
+      Script: {instanceID: 13200}
     - Class: 114
-      Script: {instanceID: 13250}
+      Script: {instanceID: 13210}
     - Class: 114
-      Script: {instanceID: 13292}
+      Script: {instanceID: 13252}
     - Class: 114
-      Script: {instanceID: 13336}
+      Script: {instanceID: 13294}
     - Class: 114
-      Script: {instanceID: 13604}
+      Script: {instanceID: 13338}
     - Class: 114
       Script: {instanceID: 13606}
+    - Class: 114
+      Script: {instanceID: 13608}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 120
@@ -1165,7 +1168,7 @@ ScriptsOnlyBuild:
     className: SteamVR_ExternalCamera
   - hash:
       serializedVersion: 2
-      Hash: 27cd1400cf6db942e3d8264354628c9a
+      Hash: 5b35a7f07214f13c84526532281167eb
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Pointer
@@ -1207,7 +1210,7 @@ ScriptsOnlyBuild:
     className: TMP_StyleSheet
   - hash:
       serializedVersion: 2
-      Hash: f895d5e3a3990c5222ac8d6c1d4bd235
+      Hash: b1e4745d81424cc1bfd36eb3082af9c5
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: ButtonManager

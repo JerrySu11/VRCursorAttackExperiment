@@ -11,9 +11,59 @@ public class ExperimentDataManager : MonoBehaviour
     
     //key: scene number. value: an ExperimentData object that contains data for that scene
     private static Dictionary<int, ExperimentData> experimentData = new Dictionary<int, ExperimentData>();
-    
+    private static string folderDir;
+
+    public static void createNewFolder()
+    {
+        string folder = Application.dataPath;
+        string folderName = System.DateTime.Now.Year.ToString() + System.DateTime.Now.Month.ToString() + System.DateTime.Now.Day.ToString() + System.DateTime.Now.Hour.ToString() + System.DateTime.Now.Minute.ToString();
+        folderName = folder + "Data" + folderName + "/";
+        folderDir = folderName;
+        Directory.CreateDirectory(folderName);
+    }
+    public static void setUpFiles()
+    {
+        string sceneData = "";
+        sceneData += "scene, isNormal, angle, targetLocationX, targetLocationY, targetLocationZ, attackLocationX, attackLocationY, attackLocationZ\n";
+        string timeLocationData = "";
+        timeLocationData += "scene,time,locationX,locationY,locationZ\n";
+        string timeHeadsetLocationData = "";
+        timeHeadsetLocationData += "scene,time,headsetLocationX,headsetLocationY,headsetLocationZ\n";
+        string timeHeadsetRotationData = "";
+        timeHeadsetRotationData += "scene,time,headsetRotationX,headsetRotationY,headsetRotationZ,headsetRotationW\n";
+        string filePath1 = folderDir  + "SceneData.csv";
+        string filePath2 = folderDir  + "TimeLocationData.csv";
+        string filePath3 = folderDir + "TimeHeadsetLocationData.csv";
+        string filePath4 = folderDir + "TimeHeadsetRotationData.csv";
+        using (var writer = new StreamWriter(filePath1, false))
+        {
+            writer.Write(sceneData);
+
+        }
+        using (var writer = new StreamWriter(filePath2, false))
+        {
+            writer.Write(timeLocationData);
+        }
+        using (var writer = new StreamWriter(filePath3, false))
+        {
+            writer.Write(timeHeadsetLocationData);
+        }
+        using (var writer = new StreamWriter(filePath4, false))
+        {
+            writer.Write(timeHeadsetRotationData);
+        }
+
+    }
     public static void setTimeLocationData(int sceneNumber, Dictionary<float, Vector3> data)
     {
+        string timeLocationData = "";
+        foreach (KeyValuePair<float, Vector3> entry2 in data)
+        {
+            timeLocationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
+
+        }
+        File.AppendAllText(folderDir + "TimeLocationData.csv", timeLocationData);
+        
         if (experimentData.ContainsKey(sceneNumber)){
             experimentData[sceneNumber].timeLocationData = data;
         }
@@ -27,6 +77,14 @@ public class ExperimentDataManager : MonoBehaviour
     }
     public static void setTimeHeadsetLocationData(int sceneNumber, Dictionary<float, Vector3> data)
     {
+        string timeHeadsetLocationData = "";
+        foreach (KeyValuePair<float, Vector3> entry2 in data)
+        {
+            timeHeadsetLocationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
+
+        }
+        File.AppendAllText(folderDir + "TimeHeadsetLocationData.csv", timeHeadsetLocationData);
+        
         if (experimentData.ContainsKey(sceneNumber))
         {
             experimentData[sceneNumber].timeHeadsetLocationData = data;
@@ -37,10 +95,18 @@ public class ExperimentDataManager : MonoBehaviour
             tempData.timeHeadsetLocationData = data;
             experimentData.Add(sceneNumber, tempData);
         }
-
+        
     }
     public static void setTimeHeadsetRotationData(int sceneNumber, Dictionary<float, Quaternion> data)
     {
+        string timeHeadsetRotationData = "";
+        foreach (KeyValuePair<float, Quaternion> entry2 in data)
+        {
+            timeHeadsetRotationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "," + entry2.Value.w + "\n";
+
+        }
+        File.AppendAllText(folderDir + "TimeHeadsetRotationData.csv", timeHeadsetRotationData);
+        
         if (experimentData.ContainsKey(sceneNumber))
         {
             experimentData[sceneNumber].timeHeadsetRotationData = data;
@@ -51,7 +117,7 @@ public class ExperimentDataManager : MonoBehaviour
             tempData.timeHeadsetRotationData = data;
             experimentData.Add(sceneNumber, tempData);
         }
-
+        
     }
     public static void setButtonLocation(int sceneNumber, Vector3 attackLocation,Vector3 targetLocation)
     {
@@ -72,14 +138,22 @@ public class ExperimentDataManager : MonoBehaviour
     {
         if (experimentData.ContainsKey(sceneNumber))
         {
+            Vector3 attackLocation = experimentData[sceneNumber].attackLocation;
+            Vector3 targetLocation = experimentData[sceneNumber].targetLocation;
+            float angle = experimentData[sceneNumber].angle;
+            string sceneData = sceneNumber.ToString() + "," + normal + "," + angle + "," + targetLocation.x + "," + targetLocation.y + "," + targetLocation.z + "," + attackLocation.x + "," + attackLocation.y + "," + attackLocation.z + "\n";
+            File.AppendAllText(folderDir + "SceneData.csv", sceneData);
+
             experimentData[sceneNumber].isNormal = normal;
         }
+        
         else
         {
             ExperimentData tempData = new ExperimentData();
             tempData.isNormal = normal;
             experimentData.Add(sceneNumber, tempData);
         }
+        
     }
     public static void setAngle(int sceneNumber, float angle)
     {
@@ -126,14 +200,14 @@ public class ExperimentDataManager : MonoBehaviour
 
             }
         }
-        string folder = Application.dataPath;
-
-        Directory.CreateDirectory(folder + "data/");
         
-        string filePath1 = folder+ "data/"+"SceneData.csv";
-        string filePath2 = folder + "data/" + "TimeLocationData.csv";
-        string filePath3 = folder + "data/" + "TimeHeadsetLocationData.csv";
-        string filePath4 = folder + "data/" + "TimeHeadsetRotationData.csv";
+
+        //Directory.CreateDirectory(folder + "Data/");
+        
+        string filePath1 = folderDir+"SceneData.csv";
+        string filePath2 = folderDir  + "TimeLocationData.csv";
+        string filePath3 = folderDir  + "TimeHeadsetLocationData.csv";
+        string filePath4 = folderDir  + "TimeHeadsetRotationData.csv";
         using (var writer = new StreamWriter(filePath1, false))
         {
             writer.Write(sceneData);

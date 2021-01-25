@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
+using Valve.VR;
+
 public class Pointer : MonoBehaviour
 {
     public float m_defaultLength = 50.0f;
@@ -11,6 +13,7 @@ public class Pointer : MonoBehaviour
     public DistractionManager distract;
 
     private LineRenderer m_LineRenderer = null;
+    //inZone denotes if we should attempt to detect/start an attack
     public bool inZone = false;
     private bool attackAttempt = false;
 
@@ -35,14 +38,21 @@ public class Pointer : MonoBehaviour
 
     private float timer;
     private bool timerStop = false;
-    public GameObject timerUI;
+    //public GameObject timerUI;
 
     public ButtonManager buttonManager;
 
+    public Transform allObjects;
+    public SteamVR_Action_Boolean m_grabAction;
+    public SteamVR_Action_Boolean m_clickAction;
+    public SteamVR_Input_Sources m_targetSource;
+
+    
     public Transform headsetTransform;
     // Start is called before the first frame update
     void Start()
     {
+        Recenter();
         m_LineRenderer = GetComponent<LineRenderer>();
 
     }
@@ -50,9 +60,20 @@ public class Pointer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //Debug.Log(headsetTransform.rotation.eulerAngles);
+        if (m_grabAction.GetStateDown(m_targetSource))
+        {
+            Recenter();
+        }
         UpdateLine();
-        timerUI.GetComponent<TextMeshProUGUI>().text = timer+"\nsec";
+        //timerUI.GetComponent<TextMeshProUGUI>().text = timer+"\nsec";
+    }
+    void Recenter()
+    {
+        allObjects.position = headsetTransform.position - new Vector3(0,1,0);
+
+        allObjects.rotation = Quaternion.Euler(0, headsetTransform.rotation.eulerAngles.y+90,0);
+        //allObjects.rotation = headsetTransform.rotation;
     }
     private void UpdateLine()
     {
@@ -78,7 +99,9 @@ public class Pointer : MonoBehaviour
                 endPosition = smoothPos(hit.point);
                 
             }
+            
             lastDisplayedCursorPos = endPosition;
+            //Debug.Log(lastDisplayedCursorPos);
             lastRealCursorPos = hit.point;
             currentOffset = lastDisplayedCursorPos - lastRealCursorPos;
         }
@@ -105,6 +128,7 @@ public class Pointer : MonoBehaviour
         {
             //Debug.Log("cursor pos" + lastDisplayedCursorPos);
             //Debug.Log("origin pos" + origin.transform.position);
+            /*
             if (isClose(lastDisplayedCursorPos, origin.transform.position) && !attackAttempt)
             {
                 attackAttempt = true;
@@ -116,6 +140,7 @@ public class Pointer : MonoBehaviour
                 timerStop = false;
                 StartCoroutine("timerStart");
             }
+            
             //if 1) the cursor has reached the targetlocation 2) the cursor is even further from the target than the starting origin (meaning it is not moving towards the target), then do not attempt to attack
             else if (attackAttempt & (isClose(lastDisplayedCursorPos, bait.transform.position) || (bait.transform.position - origin.transform.position).magnitude < (bait.transform.position - lastDisplayedCursorPos).magnitude - 1.0f))
             {
@@ -125,7 +150,57 @@ public class Pointer : MonoBehaviour
                 timerStop = true;
                 StartCoroutine("endSceneDelay");
             }
+            */
+            
+            //In the current experiment, we do not cancel an attack
+            if (attackAttempt & (isClose(lastDisplayedCursorPos, bait.transform.position)) & m_clickAction.GetStateDown(m_targetSource))
+            {
+                Debug.Log(lastDisplayedCursorPos);
+                Debug.Log(bait.transform.position);
+                
+                Debug.Log("Clicked bait button");
+                attackAttempt = false;
+                timerStop = true;
+                buttonManager.endScene();
+                //StartCoroutine("endSceneDelay");
+            }
+            
+
         }
+        else
+        {
+            
+            if (isClose(bait.transform.position, endPosition) & m_clickAction.GetStateDown(m_targetSource))
+            {
+                buttonManager.endTutorial2();
+                buttonManager.endScene();
+            }
+            
+        }
+    }
+    public void onClickOrigin()
+    {
+        //This is the case for tutorial
+        if (!inZone)
+        {
+            buttonManager.endTutorial1();
+
+        }
+        else
+        {
+            if (!attackAttempt)
+            {
+                attackAttempt = true;
+                targetOffset = (bait.transform.position - attackTarget.transform.position);
+                //distract.distract();
+                Debug.Log("Clicked origin");
+                thresholdDistRatio = (attackTarget.transform.position - bait.transform.position).magnitude / (bait.transform.position - origin.transform.position).magnitude;
+                //time an attack
+                timerStop = false;
+                StartCoroutine("timerStart");
+            }
+        }
+        
     }
     private bool isClose(Vector3 point1, Vector3 point2)
     {
@@ -163,7 +238,7 @@ public class Pointer : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = new Ray(transform.position, transform.forward);
-        Physics.Raycast(ray, out hit, m_defaultLength);
+        Physics.Raycast(ray, out hit, length);
 
         return hit;
     }
@@ -255,6 +330,8 @@ public class Pointer : MonoBehaviour
         }
         
     }
+    
+
 
 }
 

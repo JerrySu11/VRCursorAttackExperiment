@@ -198,6 +198,22 @@ MonoBehaviour:
   m_defaultLength: 5
   m_Dot: {fileID: 7963593013390174773}
   m_inputModule: {fileID: 0}
+  distract: {fileID: 0}
+  inZone: 0
+  RealLineRenderer: {fileID: 0}
+  origin: {fileID: 0}
+  bait: {fileID: 0}
+  attackTarget: {fileID: 0}
+  thresholdAngle: 15
+  thresholdDistRatio: 0.1
+  attackOption: 0
+  buttonManager: {fileID: 0}
+  allObjects: {fileID: 0}
+  m_grabAction:
+    actionPath: /actions/default/in/GrabGrip
+    needsReinit: 0
+  m_targetSource: 2
+  headsetTransform: {fileID: 0}
 --- !u!1 &7963593013390174773
 GameObject:
   m_ObjectHideFlags: 0

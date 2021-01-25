@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
+using TMPro;
 using UnityEngine;
 
 public class ButtonManager : MonoBehaviour
@@ -19,17 +19,17 @@ public class ButtonManager : MonoBehaviour
     public float buttonHeightMax;
     public float buttonHeightMin;
 
-    public GameObject introduction;
+    public GameObject menu;
     public GameObject end;
-    public GameObject endButton;
-    public GameObject startButton;
+    
+    //public GameObject startButton;
     public GameObject bait;
     public GameObject attack;
     public GameObject origin;
     public GameObject normal;
     public GameObject weird;
-    public GameObject breakDescription;
-    public GameObject breakContinue;
+    public GameObject breakMenu;
+    //public GameObject breakContinue;
 
     public Pointer pointer;
     
@@ -40,8 +40,14 @@ public class ButtonManager : MonoBehaviour
     private Dictionary<float, Vector3> tempTimeLocationData = new Dictionary<float, Vector3>();
     private Dictionary<float, Vector3> tempTimeHeadsetLocationData = new Dictionary<float, Vector3>();
     private Dictionary<float, Quaternion> tempTimeHeadsetRotationData = new Dictionary<float, Quaternion>();
-    
 
+    public GameObject stageCompletionUI;
+
+    private bool isTutorial = true;
+    public GameObject tutorial1;
+    public GameObject tutorial2;
+    public GameObject tutorial3;
+    public GameObject tutorialEndMenu;
     // Start is called before the first frame update
     void Start()
     {
@@ -90,16 +96,53 @@ public class ButtonManager : MonoBehaviour
         */
     }
     //Experiment measures 10,15,20,25,30,35,40
+
+    public void startTutorial()
+    {
+        menu.SetActive(false);
+        
+        setUpTutorial();
+    }
+    public void setUpTutorial()
+    {
+        bait.SetActive(true);
+        //attack.SetActive(true);
+        origin.SetActive(true);
+        tutorial1.SetActive(true);
+        
+        
+        //Vector2 vec = bait.GetComponent<RectTransform>().anchoredPosition - origin.GetComponent<RectTransform>().anchoredPosition;
+        //setButton(attack, origin.GetComponent<RectTransform>().anchoredPosition + vec, attack.GetComponent<RectTransform>().sizeDelta);
+    }
     public void startExperiment()
     {
-        
-        introduction.SetActive(false);
-        startButton.SetActive(false);
+        ExperimentDataManager.createNewFolder();
+        ExperimentDataManager.setUpFiles();
+        //introduction.SetActive(false);
+        //startButton.SetActive(false);
         setUpScene(allExperimentAngles[currentSceneNumber]);
        
     }
-
-    
+    public void endTutorial1()
+    {
+        tutorial1.SetActive(false);
+        tutorial2.SetActive(true);
+    }
+    public void endTutorial2()
+    {
+        tutorial2.SetActive(false);
+        tutorial3.SetActive(true);
+    }
+    public void endTutorial3()
+    {
+        tutorial3.SetActive(false);
+        tutorialEndMenu.SetActive(true);
+    }
+    public void endTutorialMenu()
+    {
+        tutorialEndMenu.SetActive(false);
+        startExperiment();
+    }
     public void setUpScene(float angle)
     {
         tempTimeLocationData.Clear();
@@ -148,9 +191,13 @@ public class ButtonManager : MonoBehaviour
     }
     public void endScene()
     {
-        ExperimentDataManager.setTimeLocationData(currentSceneNumber, tempTimeLocationData);
-        ExperimentDataManager.setTimeHeadsetLocationData(currentSceneNumber, tempTimeHeadsetLocationData);
-        ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
+        if (!isTutorial)
+        {
+            ExperimentDataManager.setTimeLocationData(currentSceneNumber, tempTimeLocationData);
+            ExperimentDataManager.setTimeHeadsetLocationData(currentSceneNumber, tempTimeHeadsetLocationData);
+            ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
+        }
+        
         bait.SetActive(false);
         attack.SetActive(false);
         origin.SetActive(false);
@@ -162,44 +209,59 @@ public class ButtonManager : MonoBehaviour
     {
         Application.Quit();
     }
+
+
+
     public void goToNextScene(bool isNormal)
     {
-        ExperimentDataManager.setNormal(currentSceneNumber, isNormal);
-        currentSceneNumber += 1;
-
-        normal.SetActive(false);
-        weird.SetActive(false);
-        if (currentSceneNumber < allExperimentAngles.Length)
+        if (isTutorial)
         {
-            if (currentSceneNumber == 55)
-            {
-                breakTime();
-            }
-            else
-            {
-                setUpScene(allExperimentAngles[currentSceneNumber]);
-            }
-            
-
+            normal.SetActive(false);
+            weird.SetActive(false);
+            isTutorial = false;
+            endTutorial3();
         }
         else
         {
-            ExperimentDataManager.exportData();
-            end.SetActive(true);
-            endButton.SetActive(true);
-            
+            ExperimentDataManager.setNormal(currentSceneNumber, isNormal);
+            currentSceneNumber += 1;
+            stageCompletionUI.GetComponent<TextMeshProUGUI>().text = currentSceneNumber + "/110";
+
+            normal.SetActive(false);
+            weird.SetActive(false);
+            if (currentSceneNumber < allExperimentAngles.Length)
+            {
+                if (currentSceneNumber == 40 || currentSceneNumber == 80)
+                {
+                    breakTime();
+                }
+                else
+                {
+                    setUpScene(allExperimentAngles[currentSceneNumber]);
+                }
+
+
+            }
+            else
+            {
+                //ExperimentDataManager.exportData();
+                end.SetActive(true);
+
+
+            }
         }
+        
         
     }
     private void breakTime()
     {
-        breakDescription.SetActive(true);
-        breakContinue.SetActive(true);
+        breakMenu.SetActive(true);
+        
     }
     public void endBreak()
     {
-        breakDescription.SetActive(false);
-        breakContinue.SetActive(false);
+        breakMenu.SetActive(false);
+        
         setUpScene(allExperimentAngles[currentSceneNumber]);
     }
     public void addTimeLocationData(float time, Vector3 location)

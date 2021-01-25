@@ -50,7 +50,7 @@ public class VRInputModule : BaseInputModule
 
     private void ProcessPress(PointerEventData data)
     {
-        Debug.Log("Press");
+        //Debug.Log("Press");
         //Set raycast
         data.pointerPressRaycast = data.pointerCurrentRaycast;
         //Check for object hit
@@ -66,7 +66,7 @@ public class VRInputModule : BaseInputModule
     }
     private void ProcessRelease(PointerEventData data)
     {
-        Debug.Log("Release");
+        //Debug.Log("Release");
         ExecuteEvents.Execute(data.pointerPress, data, ExecuteEvents.pointerUpHandler);
 
         GameObject pointerUpHandler = ExecuteEvents.GetEventHandler<IPointerClickHandler>(m_Current);
