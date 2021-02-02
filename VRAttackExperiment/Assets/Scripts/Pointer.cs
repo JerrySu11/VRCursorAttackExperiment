@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using TMPro;
 using Valve.VR;
+using UnityEngine.UI;
 
 public class Pointer : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class Pointer : MonoBehaviour
     public int attackOption = 0;
 
     private Vector3 lastDisplayedCursorPos;
-    private Vector3 lastRealCursorPos;
+    public Vector3 lastRealCursorPos;
 
 
     private float timer;
@@ -49,10 +50,11 @@ public class Pointer : MonoBehaviour
 
     
     public Transform headsetTransform;
+    public Transform plane;
     // Start is called before the first frame update
     void Start()
     {
-        Recenter();
+        //Recenter();
         m_LineRenderer = GetComponent<LineRenderer>();
 
     }
@@ -155,8 +157,8 @@ public class Pointer : MonoBehaviour
             //In the current experiment, we do not cancel an attack
             if (attackAttempt & (isClose(lastDisplayedCursorPos, bait.transform.position)) & m_clickAction.GetStateDown(m_targetSource))
             {
-                Debug.Log(lastDisplayedCursorPos);
-                Debug.Log(bait.transform.position);
+                //Debug.Log(lastDisplayedCursorPos);
+                //Debug.Log(bait.transform.position);
                 
                 Debug.Log("Clicked bait button");
                 attackAttempt = false;
@@ -180,6 +182,7 @@ public class Pointer : MonoBehaviour
     }
     public void onClickOrigin()
     {
+        origin.GetComponent<Button>().image.color = Color.grey;
         //This is the case for tutorial
         if (!inZone)
         {
@@ -217,7 +220,13 @@ public class Pointer : MonoBehaviour
         timer = 0f;
         while (!timerStop)
         {
-            buttonManager.addTimeLocationData(timer, lastRealCursorPos);
+            //Debug.Log(allObjects.position);
+
+            //Debug.Log(Quaternion.Inverse(allObjects.rotation)*(lastRealCursorPos - allObjects.position)- plane.localPosition);
+            //Debug.Log("Test: " + (Quaternion.Inverse(allObjects.rotation) * allObjects.rotation *  allObjects.position));
+            //Debug.Log("lastRealCursorPos: " + allObjects.position);
+            //Debug.Log(() * (lastRealCursorPos  - plane.position) - allObjects.position);
+            buttonManager.addTimeLocationData(timer, (Quaternion.Inverse(allObjects.rotation)) * (lastRealCursorPos - allObjects.position) - plane.localPosition);
             //Debug.Log("Headset: "+headsetTransform.rotation);
             buttonManager.addTimeHeadsetLocationData(timer, headsetTransform.position);
             buttonManager.addTimeHeadsetRotationData(timer, headsetTransform.rotation);

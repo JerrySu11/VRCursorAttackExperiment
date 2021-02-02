@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ButtonManager : MonoBehaviour
 {
@@ -41,6 +42,9 @@ public class ButtonManager : MonoBehaviour
     private Dictionary<float, Vector3> tempTimeHeadsetLocationData = new Dictionary<float, Vector3>();
     private Dictionary<float, Quaternion> tempTimeHeadsetRotationData = new Dictionary<float, Quaternion>();
 
+    private int[] allBreaks = { 40,80 };
+    private int numberOfbreaksHad = 0 ;
+
     public GameObject stageCompletionUI;
 
     private bool isTutorial = true;
@@ -48,9 +52,12 @@ public class ButtonManager : MonoBehaviour
     public GameObject tutorial2;
     public GameObject tutorial3;
     public GameObject tutorialEndMenu;
+
+    private Color originColor;
     // Start is called before the first frame update
     void Start()
     {
+
         int repetition = 10;
         allExperimentAngles = new float[allAngles.Length* repetition];
         for (int i = 0; i < allAngles.Length; i++)
@@ -69,7 +76,9 @@ public class ButtonManager : MonoBehaviour
             allExperimentAngles[rnd] = allExperimentAngles[i];
             allExperimentAngles[i] = temp;
         }
-        
+        originColor = origin.GetComponent<Button>().image.color;
+
+        updateProgressUI();
         /*
         targetButtons = new List<GameObject>();
         baitButtons = new List<GameObject>();
@@ -127,19 +136,28 @@ public class ButtonManager : MonoBehaviour
     {
         tutorial1.SetActive(false);
         tutorial2.SetActive(true);
+        tutorial3.SetActive(false);
+        tutorialEndMenu.SetActive(false);
     }
     public void endTutorial2()
     {
+        tutorial1.SetActive(false);
         tutorial2.SetActive(false);
         tutorial3.SetActive(true);
+        tutorialEndMenu.SetActive(false);
     }
     public void endTutorial3()
     {
+        tutorial1.SetActive(false);
+        tutorial2.SetActive(false);
         tutorial3.SetActive(false);
         tutorialEndMenu.SetActive(true);
     }
     public void endTutorialMenu()
     {
+        tutorial1.SetActive(false);
+        tutorial2.SetActive(false);
+        tutorial3.SetActive(false);
         tutorialEndMenu.SetActive(false);
         startExperiment();
     }
@@ -150,6 +168,8 @@ public class ButtonManager : MonoBehaviour
         tempTimeHeadsetRotationData.Clear();
         bait.SetActive(true);
         attack.SetActive(true);
+
+        origin.GetComponent<Button>().image.color = originColor;
         origin.SetActive(true);
         pointer.inZone = true;
 
@@ -174,8 +194,8 @@ public class ButtonManager : MonoBehaviour
         Vector2 vec = bait.GetComponent<RectTransform>().anchoredPosition - origin.GetComponent<RectTransform>().anchoredPosition;
         vec = Rotate(vec, angle);
         setButton(attack, origin.GetComponent<RectTransform>().anchoredPosition + vec, attack.GetComponent<RectTransform>().sizeDelta);
-
-        ExperimentDataManager.setButtonLocation(currentSceneNumber, attack.transform.position, bait.transform.position);
+        
+        ExperimentDataManager.setButtonLocation(currentSceneNumber, (Quaternion.Inverse(pointer.allObjects.rotation)) * (attack.transform.position - pointer.allObjects.position) - pointer.plane.localPosition, (Quaternion.Inverse(pointer.allObjects.rotation)) * (bait.transform.position - pointer.allObjects.position) - pointer.plane.localPosition);
         ExperimentDataManager.setAngle(currentSceneNumber, angle);
     }
     public static Vector2 Rotate(Vector2 v, float degrees)
@@ -194,8 +214,8 @@ public class ButtonManager : MonoBehaviour
         if (!isTutorial)
         {
             ExperimentDataManager.setTimeLocationData(currentSceneNumber, tempTimeLocationData);
-            ExperimentDataManager.setTimeHeadsetLocationData(currentSceneNumber, tempTimeHeadsetLocationData);
-            ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
+            ExperimentDataManager.setTimeHeadsetLocationRotationData(currentSceneNumber, tempTimeHeadsetLocationData, tempTimeHeadsetRotationData);
+            //ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
         }
         
         bait.SetActive(false);
@@ -225,14 +245,14 @@ public class ButtonManager : MonoBehaviour
         {
             ExperimentDataManager.setNormal(currentSceneNumber, isNormal);
             currentSceneNumber += 1;
-            stageCompletionUI.GetComponent<TextMeshProUGUI>().text = currentSceneNumber + "/110";
+            updateProgressUI();
+            
 
             normal.SetActive(false);
             weird.SetActive(false);
             if (currentSceneNumber < allExperimentAngles.Length)
             {
-                if (currentSceneNumber == 40 || currentSceneNumber == 80)
-                {
+                if (System.Array.Exists(allBreaks,element=>element==currentSceneNumber)) { 
                     breakTime();
                 }
                 else
@@ -258,10 +278,33 @@ public class ButtonManager : MonoBehaviour
         breakMenu.SetActive(true);
         
     }
+    private void updateProgressUI()
+    {
+        int currentStageInSession = currentSceneNumber;
+        int totalStageInSession = allBreaks[0];
+        if (numberOfbreaksHad > 0)
+        {
+            currentStageInSession = currentSceneNumber - allBreaks[numberOfbreaksHad - 1];
+
+            if (numberOfbreaksHad == allBreaks.Length)
+            {
+                totalStageInSession = allExperimentAngles.Length - allBreaks[allBreaks.Length - 1];
+            }
+            else
+            {
+                totalStageInSession = allBreaks[numberOfbreaksHad] - allBreaks[numberOfbreaksHad - 1];
+            }
+
+        }
+
+
+        stageCompletionUI.GetComponent<TextMeshProUGUI>().text = currentStageInSession + "/" + totalStageInSession + "\n" + (numberOfbreaksHad + 1) + "/" + (allBreaks.Length + 1);
+    }
     public void endBreak()
     {
         breakMenu.SetActive(false);
-        
+        numberOfbreaksHad += 1;
+        updateProgressUI();
         setUpScene(allExperimentAngles[currentSceneNumber]);
     }
     public void addTimeLocationData(float time, Vector3 location)

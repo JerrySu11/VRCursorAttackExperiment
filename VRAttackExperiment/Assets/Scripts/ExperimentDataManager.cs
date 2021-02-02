@@ -28,13 +28,13 @@ public class ExperimentDataManager : MonoBehaviour
         string timeLocationData = "";
         timeLocationData += "scene,time,locationX,locationY,locationZ\n";
         string timeHeadsetLocationData = "";
-        timeHeadsetLocationData += "scene,time,headsetLocationX,headsetLocationY,headsetLocationZ\n";
-        string timeHeadsetRotationData = "";
-        timeHeadsetRotationData += "scene,time,headsetRotationX,headsetRotationY,headsetRotationZ,headsetRotationW\n";
+        timeHeadsetLocationData += "scene,time,headsetLocationX,headsetLocationY,headsetLocationZ,headsetRotationX,headsetRotationY,headsetRotationZ,headsetRotationW,headsetRotationEulerX,headsetRotationEulerY,headsetRotationEulerZ\n";
+        //string timeHeadsetRotationData = "";
+        //timeHeadsetRotationData += "scene,time,\n";
         string filePath1 = folderDir  + "SceneData.csv";
         string filePath2 = folderDir  + "TimeLocationData.csv";
-        string filePath3 = folderDir + "TimeHeadsetLocationData.csv";
-        string filePath4 = folderDir + "TimeHeadsetRotationData.csv";
+        string filePath3 = folderDir + "TimeHeadsetLocationRotationData.csv";
+        //string filePath4 = folderDir + "TimeHeadsetRotationData.csv";
         using (var writer = new StreamWriter(filePath1, false))
         {
             writer.Write(sceneData);
@@ -48,10 +48,11 @@ public class ExperimentDataManager : MonoBehaviour
         {
             writer.Write(timeHeadsetLocationData);
         }
-        using (var writer = new StreamWriter(filePath4, false))
+        /*using (var writer = new StreamWriter(filePath4, false))
         {
             writer.Write(timeHeadsetRotationData);
         }
+        */
 
     }
     public static void setTimeLocationData(int sceneNumber, Dictionary<float, Vector3> data)
@@ -75,24 +76,26 @@ public class ExperimentDataManager : MonoBehaviour
         }
         
     }
-    public static void setTimeHeadsetLocationData(int sceneNumber, Dictionary<float, Vector3> data)
+    public static void setTimeHeadsetLocationRotationData(int sceneNumber, Dictionary<float, Vector3> data, Dictionary<float, Quaternion> data2)
     {
         string timeHeadsetLocationData = "";
         foreach (KeyValuePair<float, Vector3> entry2 in data)
         {
-            timeHeadsetLocationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "\n";
-
+            timeHeadsetLocationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + ","+ data2[entry2.Key].x + ","+ data2[entry2.Key].y + ","+ data2[entry2.Key].z + ","+ data2[entry2.Key].w +","+ data2[entry2.Key].eulerAngles.x+","+ data2[entry2.Key].eulerAngles.y + "," + data2[entry2.Key].eulerAngles.z + "\n";
+            
         }
-        File.AppendAllText(folderDir + "TimeHeadsetLocationData.csv", timeHeadsetLocationData);
+        File.AppendAllText(folderDir + "TimeHeadsetLocationRotationData.csv", timeHeadsetLocationData);
         
         if (experimentData.ContainsKey(sceneNumber))
         {
             experimentData[sceneNumber].timeHeadsetLocationData = data;
+            experimentData[sceneNumber].timeHeadsetRotationData = data2;
         }
         else
         {
             ExperimentData tempData = new ExperimentData();
             tempData.timeHeadsetLocationData = data;
+            tempData.timeHeadsetRotationData = data2;
             experimentData.Add(sceneNumber, tempData);
         }
         
@@ -105,7 +108,7 @@ public class ExperimentDataManager : MonoBehaviour
             timeHeadsetRotationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "," + entry2.Value.w + "\n";
 
         }
-        File.AppendAllText(folderDir + "TimeHeadsetRotationData.csv", timeHeadsetRotationData);
+        File.AppendAllText(folderDir + "TimeHeadsetLocationRotationData.csv", timeHeadsetRotationData);
         
         if (experimentData.ContainsKey(sceneNumber))
         {
