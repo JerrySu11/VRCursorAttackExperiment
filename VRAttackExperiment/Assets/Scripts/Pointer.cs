@@ -54,7 +54,7 @@ public class Pointer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //Recenter();
+        Recenter();
         m_LineRenderer = GetComponent<LineRenderer>();
 
     }
@@ -62,6 +62,7 @@ public class Pointer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         //Debug.Log(headsetTransform.rotation.eulerAngles);
         if (m_grabAction.GetStateDown(m_targetSource))
         {
@@ -72,7 +73,7 @@ public class Pointer : MonoBehaviour
     }
     void Recenter()
     {
-        allObjects.position = headsetTransform.position - new Vector3(0,1,0);
+        allObjects.position = headsetTransform.position - new Vector3(0,2,0);
 
         allObjects.rotation = Quaternion.Euler(0, headsetTransform.rotation.eulerAngles.y+90,0);
         //allObjects.rotation = headsetTransform.rotation;
@@ -230,6 +231,8 @@ public class Pointer : MonoBehaviour
             //Debug.Log("Headset: "+headsetTransform.rotation);
             buttonManager.addTimeHeadsetLocationData(timer, headsetTransform.position);
             buttonManager.addTimeHeadsetRotationData(timer, headsetTransform.rotation);
+            buttonManager.addTimeControllerLocationData(timer, transform.position);
+            buttonManager.addTimeControllerRotationData(timer, transform.rotation);
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }

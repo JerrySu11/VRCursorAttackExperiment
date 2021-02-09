@@ -29,11 +29,13 @@ public class ExperimentDataManager : MonoBehaviour
         timeLocationData += "scene,time,locationX,locationY,locationZ\n";
         string timeHeadsetLocationData = "";
         timeHeadsetLocationData += "scene,time,headsetLocationX,headsetLocationY,headsetLocationZ,headsetRotationX,headsetRotationY,headsetRotationZ,headsetRotationW,headsetRotationEulerX,headsetRotationEulerY,headsetRotationEulerZ\n";
+        string timeControllerLocationData = "scene,time,controllerLocationX,controllerLocationY,controllerLocationZ,controllerRotationX,controllerRotationY,controllerRotationZ,controllerRotationW,controllerRotationEulerX,controllerRotationEulerY,controllerRotationEulerZ\n";
         //string timeHeadsetRotationData = "";
         //timeHeadsetRotationData += "scene,time,\n";
         string filePath1 = folderDir  + "SceneData.csv";
         string filePath2 = folderDir  + "TimeLocationData.csv";
         string filePath3 = folderDir + "TimeHeadsetLocationRotationData.csv";
+        string filePath4 = folderDir + "TimeControllerLocationRotationData.csv";
         //string filePath4 = folderDir + "TimeHeadsetRotationData.csv";
         using (var writer = new StreamWriter(filePath1, false))
         {
@@ -48,11 +50,11 @@ public class ExperimentDataManager : MonoBehaviour
         {
             writer.Write(timeHeadsetLocationData);
         }
-        /*using (var writer = new StreamWriter(filePath4, false))
+        using (var writer = new StreamWriter(filePath4, false))
         {
-            writer.Write(timeHeadsetRotationData);
+            writer.Write(timeControllerLocationData);
         }
-        */
+        
 
     }
     public static void setTimeLocationData(int sceneNumber, Dictionary<float, Vector3> data)
@@ -99,6 +101,30 @@ public class ExperimentDataManager : MonoBehaviour
             experimentData.Add(sceneNumber, tempData);
         }
         
+    }
+    public static void setTimeControllerLocationRotationData(int sceneNumber, Dictionary<float, Vector3> data, Dictionary<float, Quaternion> data2)
+    {
+        string timeControllerLocationData = "";
+        foreach (KeyValuePair<float, Vector3> entry2 in data)
+        {
+            timeControllerLocationData += sceneNumber.ToString() + "," + entry2.Key + "," + entry2.Value.x + "," + entry2.Value.y + "," + entry2.Value.z + "," + data2[entry2.Key].x + "," + data2[entry2.Key].y + "," + data2[entry2.Key].z + "," + data2[entry2.Key].w + "," + data2[entry2.Key].eulerAngles.x + "," + data2[entry2.Key].eulerAngles.y + "," + data2[entry2.Key].eulerAngles.z + "\n";
+
+        }
+        File.AppendAllText(folderDir + "TimeControllerLocationRotationData.csv", timeControllerLocationData);
+
+        if (experimentData.ContainsKey(sceneNumber))
+        {
+            experimentData[sceneNumber].timeControllerLocationData = data;
+            experimentData[sceneNumber].timeControllerRotationData = data2;
+        }
+        else
+        {
+            ExperimentData tempData = new ExperimentData();
+            tempData.timeControllerLocationData = data;
+            tempData.timeControllerRotationData = data2;
+            experimentData.Add(sceneNumber, tempData);
+        }
+
     }
     public static void setTimeHeadsetRotationData(int sceneNumber, Dictionary<float, Quaternion> data)
     {
@@ -257,4 +283,8 @@ public class ExperimentData
 
     public Dictionary<float, Vector3> timeHeadsetLocationData = new Dictionary<float, Vector3>();
     public Dictionary<float, Quaternion> timeHeadsetRotationData = new Dictionary<float, Quaternion>();
+
+    public Dictionary<float, Vector3> timeControllerLocationData = new Dictionary<float, Vector3>();
+    public Dictionary<float, Quaternion> timeControllerRotationData = new Dictionary<float, Quaternion>();
+    
 }

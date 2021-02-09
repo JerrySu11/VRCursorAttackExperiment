@@ -42,6 +42,10 @@ public class ButtonManager : MonoBehaviour
     private Dictionary<float, Vector3> tempTimeHeadsetLocationData = new Dictionary<float, Vector3>();
     private Dictionary<float, Quaternion> tempTimeHeadsetRotationData = new Dictionary<float, Quaternion>();
 
+    private Dictionary<float, Vector3> tempTimeControllerLocationData = new Dictionary<float, Vector3>();
+
+    private Dictionary<float, Quaternion> tempTimeControllerRotationData = new Dictionary<float, Quaternion>();
+
     private int[] allBreaks = { 40,80 };
     private int numberOfbreaksHad = 0 ;
 
@@ -166,6 +170,8 @@ public class ButtonManager : MonoBehaviour
         tempTimeLocationData.Clear();
         tempTimeHeadsetLocationData.Clear();
         tempTimeHeadsetRotationData.Clear();
+        tempTimeControllerLocationData.Clear();
+        tempTimeControllerRotationData.Clear();
         bait.SetActive(true);
         attack.SetActive(true);
 
@@ -215,6 +221,7 @@ public class ButtonManager : MonoBehaviour
         {
             ExperimentDataManager.setTimeLocationData(currentSceneNumber, tempTimeLocationData);
             ExperimentDataManager.setTimeHeadsetLocationRotationData(currentSceneNumber, tempTimeHeadsetLocationData, tempTimeHeadsetRotationData);
+            ExperimentDataManager.setTimeControllerLocationRotationData(currentSceneNumber, tempTimeControllerLocationData, tempTimeControllerRotationData);
             //ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
         }
         
@@ -331,6 +338,7 @@ public class ButtonManager : MonoBehaviour
         }
     }
 
+
     public void addTimeHeadsetRotationData(float time, Quaternion rotation)
     {
         if (tempTimeHeadsetRotationData.ContainsKey(time))
@@ -340,6 +348,30 @@ public class ButtonManager : MonoBehaviour
         else
         {
             tempTimeHeadsetRotationData.Add(time, rotation);
+        }
+    }
+
+    public void addTimeControllerLocationData(float time, Vector3 location)
+    {
+        if (tempTimeControllerLocationData.ContainsKey(time))
+        {
+            tempTimeControllerLocationData[time] = location;
+        }
+        else
+        {
+            tempTimeControllerLocationData.Add(time, location);
+        }
+    }
+
+    public void addTimeControllerRotationData(float time, Quaternion rotation)
+    {
+        if (tempTimeControllerRotationData.ContainsKey(time))
+        {
+            tempTimeControllerRotationData[time] = rotation;
+        }
+        else
+        {
+            tempTimeControllerRotationData.Add(time, rotation);
         }
     }
 
