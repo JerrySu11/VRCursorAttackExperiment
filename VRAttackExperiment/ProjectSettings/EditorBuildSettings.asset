@@ -8,10 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/Experiment Scene.unity
     guid: 747c5f0918d44dc409d3ce0ee771c33a
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/Left hand version.unity
     guid: a637018104e656b4bb764eb851d89c74
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Right hand version.unity
     guid: d5706070137851d43ad98de283bab09f
   m_configObjects: {}

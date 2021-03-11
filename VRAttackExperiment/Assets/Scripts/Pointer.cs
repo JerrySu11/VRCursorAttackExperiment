@@ -62,7 +62,9 @@ public class Pointer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         
+        //Debug.Log("3:" + allObjects.rotation.eulerAngles.y);
         //Debug.Log(headsetTransform.rotation.eulerAngles);
         if (m_grabAction.GetStateDown(m_targetSource))
         {
@@ -229,10 +231,20 @@ public class Pointer : MonoBehaviour
             //Debug.Log(() * (lastRealCursorPos  - plane.position) - allObjects.position);
             buttonManager.addTimeLocationData(timer, (Quaternion.Inverse(allObjects.rotation)) * (lastRealCursorPos - allObjects.position) - plane.localPosition);
             //Debug.Log("Headset: "+headsetTransform.rotation);
-            buttonManager.addTimeHeadsetLocationData(timer, headsetTransform.position);
-            buttonManager.addTimeHeadsetRotationData(timer, headsetTransform.rotation);
-            buttonManager.addTimeControllerLocationData(timer, transform.position);
-            buttonManager.addTimeControllerRotationData(timer, transform.rotation);
+
+            float temp1 = headsetTransform.rotation.eulerAngles.y - allObjects.rotation.eulerAngles.y + 90;
+            temp1 = temp1 < 0 ? temp1 + 360 : temp1;
+            temp1 = temp1 > 360f ? temp1 - 360f : temp1;
+
+            buttonManager.addTimeHeadsetLocationData(timer, (Quaternion.Inverse(allObjects.rotation)) * (headsetTransform.position - allObjects.position));
+            buttonManager.addTimeHeadsetRotationData(timer, Quaternion.Euler(headsetTransform.rotation.eulerAngles.x, temp1, headsetTransform.eulerAngles.z));
+
+            float temp = transform.rotation.eulerAngles.y - allObjects.rotation.eulerAngles.y + 90;
+            temp = temp < 0 ? temp + 360 : temp;
+            temp = temp > 360f ? temp - 360f : temp;
+
+            buttonManager.addTimeControllerLocationData(timer, (Quaternion.Inverse(allObjects.rotation)) * (transform.position - allObjects.position));
+            buttonManager.addTimeControllerRotationData(timer, Quaternion.Euler(transform.rotation.eulerAngles.x,temp,transform.eulerAngles.z));
             timer += Time.deltaTime;
             yield return new WaitForEndOfFrame();
         }

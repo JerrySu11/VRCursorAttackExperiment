@@ -1,0 +1,4 @@
+scene, isNormal, angle, targetLocationX, targetLocationY, targetLocationZ, attackLocationX, attackLocationY, attackLocationZ
+0,True,0,-0.03999901,-1.632302,0.9138002,-0.03999901,-1.632302,0.9138002
+1,True,0,-0.03999949,1.303809,1.485252,-0.03999949,1.303809,1.485252
+2,False,-25,-0.03999901,-1.563442,1.037859,-0.03999853,-1.826204,0.2605866

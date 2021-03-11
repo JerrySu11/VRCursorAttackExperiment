@@ -38,7 +38,7 @@ ScriptsOnlyBuild:
     - UnityEngine.UI.Image
     - UnityEngine.UI.RawImage
   sceneClasses:
-    Assets/Scenes/Right hand version.unity:
+    Assets/Scenes/Left hand version.unity:
     - Class: 1
       Script: {instanceID: 0}
     - Class: 4
@@ -1414,5 +1414,5 @@ ScriptsOnlyBuild:
     className: PlayableTrack
   platform: 5
   scenePathNames:
-  - Assets/Scenes/Right hand version.unity
-  playerPath: D:/ExperimentPrototypeV0.5/VRAttackExperiment.exe
+  - Assets/Scenes/Left hand version.unity
+  playerPath: D:/ExperimentPrototypeV0.6(left handed)/VRAttackExperiment.exe
