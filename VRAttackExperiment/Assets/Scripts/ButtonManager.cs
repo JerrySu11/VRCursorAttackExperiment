@@ -52,10 +52,16 @@ public class ButtonManager : MonoBehaviour
     public GameObject stageCompletionUI;
 
     private bool isTutorial = true;
+    private bool isPractice = false;
+
     public GameObject tutorial1;
     public GameObject tutorial2;
     public GameObject tutorial3;
     public GameObject tutorialEndMenu;
+    public GameObject practiceEndMenu;
+
+    public int practiceTrials = 10;
+    
 
     private Color originColor;
     // Start is called before the first frame update
@@ -134,6 +140,8 @@ public class ButtonManager : MonoBehaviour
         //introduction.SetActive(false);
         //startButton.SetActive(false);
         setUpScene(allExperimentAngles[currentSceneNumber]);
+        isTutorial = false;
+        isPractice = false;
        
     }
     public void endTutorial1()
@@ -163,8 +171,12 @@ public class ButtonManager : MonoBehaviour
         tutorial2.SetActive(false);
         tutorial3.SetActive(false);
         tutorialEndMenu.SetActive(false);
-        startExperiment();
+        //Start practice trials
+        isTutorial = false;
+        isPractice = true;
+        setUpScene(0);
     }
+    
     public void setUpScene(float angle)
     {
         tempTimeLocationData.Clear();
@@ -217,27 +229,53 @@ public class ButtonManager : MonoBehaviour
     }
     public void endScene()
     {
-        if (!isTutorial)
+        //Only actual experiment records data
+        if (!isTutorial & !isPractice)
         {
             ExperimentDataManager.setTimeLocationData(currentSceneNumber, tempTimeLocationData);
             ExperimentDataManager.setTimeHeadsetLocationRotationData(currentSceneNumber, tempTimeHeadsetLocationData, tempTimeHeadsetRotationData);
             ExperimentDataManager.setTimeControllerLocationRotationData(currentSceneNumber, tempTimeControllerLocationData, tempTimeControllerRotationData);
             //ExperimentDataManager.setTimeHeadsetRotationData(currentSceneNumber, tempTimeHeadsetRotationData);
         }
+        if (isPractice)
+        {
+            
+            bait.SetActive(false);
+            attack.SetActive(false);
+            origin.SetActive(false);
+            pointer.inZone = false;
+            goToNextScene(true);
+        }
+        else
+        {
+            bait.SetActive(false);
+            attack.SetActive(false);
+            origin.SetActive(false);
+            pointer.inZone = false;
+            normal.SetActive(true);
+            weird.SetActive(true);
+        }
         
-        bait.SetActive(false);
-        attack.SetActive(false);
-        origin.SetActive(false);
-        pointer.inZone = false;
-        normal.SetActive(true);
-        weird.SetActive(true);
     }
     public void endGame()
     {
         Application.Quit();
     }
+    private void endPractice()
+    {
+        normal.SetActive(false);
+        weird.SetActive(false);
+        practiceEndMenu.SetActive(true);
+        isPractice = false;
+        
+    }
 
-
+    //This ends the practice menu and starts the experiment
+    public void endPracticeMenu()
+    {
+        practiceEndMenu.SetActive(false);
+        startExperiment();
+    }
 
     public void goToNextScene(bool isNormal)
     {
@@ -245,8 +283,22 @@ public class ButtonManager : MonoBehaviour
         {
             normal.SetActive(false);
             weird.SetActive(false);
-            isTutorial = false;
+            
             endTutorial3();
+        }
+        else if (isPractice)
+        {
+            Debug.Log("Checkpoint");
+            practiceTrials -= 1;
+            if (practiceTrials == 0)
+            {
+                endPractice();
+                
+            }
+            else
+            {
+                setUpScene(0);
+            }
         }
         else
         {
