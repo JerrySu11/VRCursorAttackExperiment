@@ -18,7 +18,7 @@ public class Pointer : MonoBehaviour
     public bool inZone = false;
     private bool attackAttempt = false;
 
-    private bool displayRealCursor = false;
+    private bool displayRealCursor = true;
     public LineRenderer RealLineRenderer;
 
     public GameObject origin;
@@ -110,7 +110,7 @@ public class Pointer : MonoBehaviour
             lastRealCursorPos = hit.point;
             currentOffset = lastDisplayedCursorPos - lastRealCursorPos;
         }
-        m_Dot.transform.position = endPosition;
+        
 
         m_LineRenderer.SetPosition(0, transform.position);
         m_LineRenderer.SetPosition(1, endPosition);
@@ -124,6 +124,7 @@ public class Pointer : MonoBehaviour
             
             RealLineRenderer.SetPosition(0, transform.position);
             RealLineRenderer.SetPosition(1, hit.point);
+            m_Dot.transform.position = hit.point;//+(transform.position-hit.point).normalized*0.6f;
         }
         else
         {

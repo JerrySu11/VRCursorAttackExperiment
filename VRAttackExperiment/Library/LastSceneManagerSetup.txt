@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Left hand version.unity
+- path: Assets/Scenes/Right hand version.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
